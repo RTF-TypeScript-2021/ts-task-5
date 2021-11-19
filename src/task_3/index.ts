@@ -3,9 +3,9 @@
  */
 
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
-    return obj[key];
+  return obj[key];
 }
 
-const x = undefined;
+const x = { m: "Kek" };
 
-console.log(getProperty(x, "m")); 
+console.log(getProperty(x, "m"));

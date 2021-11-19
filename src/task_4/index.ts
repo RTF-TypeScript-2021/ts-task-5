@@ -32,3 +32,23 @@ class ValidationExample {
     @validate(ValueExample2, "booleanProp")
     public propValueExample2: any;
 }
+
+function validate<T extends new () => { [k: string]: any }>(object: T, property: string) {
+    const o = new object();
+
+    return (target: Object, targetProp: string) => {
+        let value: unknown = undefined;
+        Object.defineProperty(target, targetProp, {
+            get: () => value,
+            set: (newValue) => {
+                if (property in o) {
+                    if (typeof o[property] === typeof newValue) {
+                        if (o[property]) {
+                            value = o[property]
+                        }
+                    }
+                }
+            }
+        })
+    }
+}
