@@ -4,8 +4,21 @@
  * 		1) Проверять соответствие устанавливаемого значения типу, который передан в декоратор.
  * 		   Если тип не верный, то генерируется эксепшен.
  * 		2) Проверять у передаваемого объекта наличие заполненного поля.
- * 		   Если поле не заполнено, то генерируется эксепшен.
+ * 		   Если поле не заполнено, то генерируется эксепшен. *Не понял*
  */
+function validate<T extends new() => any>(object: T, keyName: string) {
+    return (target: { [key: string] : any }, key: keyof typeof target) => {
+        let value: unknown;
+        Object.defineProperty(target, key, {
+            get: () => value,
+            set: (newValue) => {
+                if (typeof target[key] === typeof newValue) {
+                    value = newValue;
+                }
+            }
+        })
+    }
+}
 
 class ValueExample1 {
     public value: string;
