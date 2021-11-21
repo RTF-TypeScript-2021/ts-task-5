@@ -20,6 +20,26 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    
+    constructor(){
+        super();
+    }
+
+    public getValue(): string{
+        if (!this.value){
+            throw new Error("Нет аргумента")   
+        }
+        return this.value;
+    }
+
+    public setValue(value: string){
+
+        if(typeof value !== "string"){
+            throw new Error("Неверный аргумент")
+        }
+        this.value = value; 
+
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +49,21 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    constructor(){
+        super();
+    }
+
+    public getValue(): SelectItem{
+        if (!this.value){
+            throw new Error("Нет аргумента")   
+        }
+        return this.value;
+    }
+
+    public setValue(value: SelectItem){
+        this.value = value;
+    }
+    
 }
 
 class Container {
@@ -45,21 +80,29 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends new () => Control<any>>(type: T) {
+        this._collection.push({instance: new type(),type: typeof type});
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends new() => Control<any>>(type: T): Control<any> {
+        if(!this.existType(type.name)){
+            throw new Error("Такого контрола нет")
+        } else {
+            return this._collection.find(container => container.type === typeof type).instance;
+        }
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
 factory.register(SelectBox);
 
 const selectBoxInstance = factory.getInstance(SelectBox);
+
+
 
 selectBoxInstance.setValue("sdfsdf") // компилятор TS не пропускает
 selectBoxInstance.setValue(new SelectItem()) // компилятор TS пропускает

@@ -5,8 +5,31 @@
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
 
+
+function CheckMail():any{
+    return function(target: Object, propertyKey: string|symbol){
+        let mail: string;
+        Object.defineProperty(target, propertyKey,{
+            get: () => mail,
+            set: (newMail: string)=> {
+                const regEx = /(\w+|\w+\W\w+)@\w+\.(ru|com)/;
+                if(regEx.test(newMail)){
+                    mail = newMail;
+                    console.log("email valid");
+                } else {
+                    console.log("email invalid")
+                    throw new Error();
+                }
+            }
+        })
+    }
+
+}
+
 class Example {
-    public email: string = "";
+    @CheckMail()
+    public email: string;
+    
 }
 
 let exampleInstance = new Example();
