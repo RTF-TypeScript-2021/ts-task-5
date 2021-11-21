@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /** Задача 2
  * Ниже представлен код в котором, пропущены участки кода.
  * Требуется дописать участки кода так, чтобы программа компилировалась.
@@ -10,7 +12,7 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name = "";
 
     protected value: T;
     /**взять значение из контрола */
@@ -20,6 +22,23 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    constructor() {
+        super();
+        this.value = '';
+    }
+
+    public getValue(): string {
+        return this.value;
+    }
+
+    public setValue(val: string): void {
+        if (typeof val === typeof String) {
+            this.value = val;
+            
+        } else {
+            throw new Error('wrong value')
+        }
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +48,23 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    constructor() {
+        super();
+        this.value = new SelectItem()
+    }
+
+    public getValue(): SelectItem {
+        return this.value;
+    }
+
+    public setValue(val: SelectItem): void {
+        if (val instanceof SelectItem) {
+            this.value = val;
+            
+        } else {
+            throw new Error('wrong value')
+        }
+    }
 }
 
 class Container {
@@ -45,15 +81,20 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends Control<any>>(type: new () => T): void {
+        this._collection.push({instance: new type(),
+            type: type.name    
+        });
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends Control<any>>(type: new () => T): T {        
+        return new type();
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
