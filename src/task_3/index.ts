@@ -6,6 +6,6 @@ function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
     return obj[key];
 }
 
-const x = undefined;
+const x = {m: "Знаете почему у смурфиков нету детей? Потому что они ГОЛУБЫЕ"};
 
 console.log(getProperty(x, "m")); 

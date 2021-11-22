@@ -5,10 +5,26 @@
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
 
-class Example {
-    public email: string = "";
+ function CheckEmail(target: object, propertyName: string) {
+    let emailValue : string;
+    Object.defineProperty(target, propertyName, {
+        get: () => emailValue,
+        set: (newEmailValue: string) =>{
+            const reg = /(\w+|\w+\W\w+)@\w+\.(ru|com)/;
+            if (!reg.test(propertyName)) {
+                throw new Error("email invalid");
+            }
+            emailValue = newEmailValue;
+            console.log("email valid");
+        }
+    })
 }
 
-let exampleInstance = new Example();
+class Example {
+    @CheckEmail
+    public email: string;
+}
+
+const exampleInstance = new Example();
 exampleInstance.email = "fkkldfjg"; // генерирует эксепшен
 exampleInstance.email = "misha@mail.ru"; // выводит в консоль e-mail valid

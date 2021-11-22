@@ -20,6 +20,21 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    constructor(){
+        super();
+    }
+
+    public getValue(): string {
+        if(!this.value){
+            throw new Error("No value")
+        }
+
+        return this.value;
+    }
+
+    public setValue(val: string): void {
+        this.value = val;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +44,21 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    constructor(){
+        super();
+    }
+
+    public getValue(): SelectItem {
+        if(!this.getValue){
+            throw new Error("No value")
+        }
+        
+        return this.value;
+    }
+
+    public setValue(val: SelectItem): void {
+        this.value = val;
+    }
 }
 
 class Container {
@@ -45,15 +75,21 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
+    public register<T extends Control<any>>(type: new() => T) {
+        this._collection.push({instance: new type(), type: typeof type});
 }
 
-public getInstance<?>(type: ?): ? {
+public getInstance<T extends Control<any>>(type: new() => T) {
+        if(this.existType(typeof type)){
+            return this._collection.find(x => x.type === typeof type).instance;
+        } else {
+            throw new Error("doesn't contains control");
+        }
     }
 
     private existType(type: string) {
     return this._collection.filter(g => g.type === type).length > 0;
-}
+    }
 }
 
 const factory = new FactoryControl();
