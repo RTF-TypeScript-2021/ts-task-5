@@ -10,16 +10,26 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name = "";
 
     protected value: T;
     /**взять значение из контрола */
     public abstract getValue(): T;
     /**установить значение в контрол */
-    public abstract setValue(val: T): void;
+    public abstract setValue(value: T): void;
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    public getValue(): string {
+        return this.value;
+    }
+
+    public setValue(value: string): void {
+        if (typeof value !== "string") {
+            throw new Error("Non correct value");
+        }
+        this.value = value;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +39,16 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    public getValue(): SelectItem {
+        return this.value;
+      }
+    
+      public setValue(value: SelectItem): void {
+        if (!("value" in value && "id" in value)) {
+          throw new Error("Non correct value");
+        }
+        this.value = value;
+      }
 }
 
 class Container {
@@ -45,15 +65,23 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends new () => Control<any>>(type: T) {
+        const container = new Container();
+        container.type = type.name;
+        container.instance = new type();
+        this._collection.push({instance: new type(), type: typeof type });
+      }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+        if (this.existType(type.name)) {
+          return this._collection.find((value) => value.type === type.name) as unknown as Control<any>;
+        }
+        return new type();
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();

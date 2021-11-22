@@ -6,7 +6,23 @@
  */
 
 class Example {
+    @ValidEmail
     public email: string = "";
+}
+
+function ValidEmail(target: object, property: string) {
+    let email : string;
+    Object.defineProperty(target, property, {
+        get: () => email,
+        set: (newEmail: string) =>{
+            const regular = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/;
+            if (!regular.test(property)) {
+                throw new Error("email invalid");
+            }
+            email = newEmail;
+            console.log("email valid");
+        }
+    })
 }
 
 let exampleInstance = new Example();
