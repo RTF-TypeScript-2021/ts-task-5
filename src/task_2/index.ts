@@ -10,7 +10,7 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name= "";
 
     protected value: T;
     /**взять значение из контрола */
@@ -19,7 +19,26 @@ abstract class Control<T> {
     public abstract setValue(val: T): void;
 }
 /**Класс описывает TextBox контрол */
-class TextBox extends Control<string> {
+class TextBox extends Control<string>{
+    constructor(){
+        super();
+    }
+    public getValue():string {
+        if (this.value === undefined){
+            throw new Error("TextBox: value is empty")
+        } else {
+            return this.value;
+        }
+
+    }
+    public setValue(newValue: string){
+        if (typeof newValue === "string"){
+            this.value = newValue;
+        } else {
+            throw Error ("TextBox: invalid value for value property")
+        }
+    }
+
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +48,25 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    constructor(){
+        super();
+    }
+    public getValue():SelectItem {
+        if(this.value === undefined){
+            throw new Error("SelectBox: value is empty")
+        } else {
+
+            return this.value;
+        }
+    }
+    public setValue(newValue: SelectItem){
+        if(newValue instanceof SelectItem){
+            this.value = newValue;
+        } else {
+            throw new Error ("SelectBox: invalid new value for value property")
+        }
+        
+    }
 }
 
 class Container {
@@ -45,10 +83,23 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
+    public register<T extends Control<any>>(type: new ()=>T) {
+        this._collection.push({
+            instance: new type(),
+            type: type.name
+        });
 }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends Control<any>>(type: new ()=>T): T {
+        const controlInstance: Control<any> | undefined = this._collection.find(
+            (item:Container) => item.type === type.name
+            )?.instance;
+        if(controlInstance !== undefined){
+            return <T>controlInstance;
+        } else {
+            throw new Error (`Can't find ${type.name} instance`);
+        }
+        
     }
 
     private existType(type: string) {
