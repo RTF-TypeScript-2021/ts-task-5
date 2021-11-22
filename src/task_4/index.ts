@@ -7,6 +7,19 @@
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
 
+function validate< T extends new() =>any> (obj: T, keyName: string){
+    return(target: {[key: string]: any}, key: keyof typeof target)=> {
+        let value: unknown;
+        Object.defineProperty(target, key, {
+            get: () => value,
+            set: (newValue) => {
+                if(typeof target[key] === typeof newValue){
+                    value = newValue;
+                }
+            }
+        })
+    }
+}
 class ValueExample1 {
     public value: string;
     public id: number;
