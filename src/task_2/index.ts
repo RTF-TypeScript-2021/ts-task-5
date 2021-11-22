@@ -10,7 +10,7 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name = "";
 
     protected value: T;
     /**взять значение из контрола */
@@ -20,6 +20,21 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    getValue(): string {
+        if (!this.value) {
+            throw new Error("The value is not set")
+        }
+        
+        return this.value;
+    }
+    
+    setValue(val: string): void {
+        if (!val) {
+            throw Error("Wrong input argument");
+        }
+        
+        this.value = val;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +44,21 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    getValue(): SelectItem {
+        if (!this.value) {
+            throw new Error("The value is not set")
+        }
+        
+        return this.value;
+    }
+    
+    setValue(val: SelectItem): void {
+        if (!val) {
+            throw Error("Wrong input argument");
+        }
+        
+        this.value = val;
+    }
 }
 
 class Container {
@@ -45,10 +75,20 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
+    public register<T extends new () => Control<any>>(type: T) {
+        const container: Container = {
+            instance: new type,
+            type: type.name
+        }
+        this._collection.push(container);
 }
 
-public getInstance<?>(type: ?): ? {
+public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+        if (this.existType(typeof type)) {
+            return this._collection.find(x => x.type === typeof type).instance;
+        } 
+        
+        throw new Error("Current instance didn't found");
     }
 
     private existType(type: string) {
