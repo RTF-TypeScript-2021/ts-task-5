@@ -13,22 +13,48 @@ abstract class Control<T> {
     public name: string = "";
 
     protected value: T;
+
     /**взять значение из контрола */
     public abstract getValue(): T;
+
     /**установить значение в контрол */
     public abstract setValue(val: T): void;
 }
+
 /**Класс описывает TextBox контрол */
-class TextBox extends Control<string> {
+export class TextBox extends Control<string> {
+    getValue(): string {
+        return this.value;
+    }
+
+    setValue(val: string): void {
+        if (typeof val === "string") {
+            this.value = val;
+        } else {
+            throw new Error();
+        }
+    }
 }
+
 /**value контрола selectBox */
-class SelectItem {
+export class SelectItem {
     public value: string;
     public id: number;
 }
 
 /**Класс описывает SelectBox контрол */
-class SelectBox extends Control<SelectItem> {
+export class SelectBox extends Control<SelectItem> {
+    getValue(): SelectItem {
+        return this.value;
+    }
+
+    setValue(val: SelectItem): void {
+        if ("value" in val && "id" in val) {
+            this.value = val;
+        } else {
+            throw new Error();
+        }
+    }
 }
 
 class Container {
@@ -37,27 +63,36 @@ class Container {
 }
 
 /**Фабрика которая отвечает за создание экземпляров контролов */
-class FactoryControl {
+export class FactoryControl {
     /**Список соотношений тип - инстанс типа */
-    private _collection: Array<Container>;
+    private readonly _collection: Array<Container>;
 
     constructor() {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends new () => Control<any>>(type: T) {
+        const container = new Container();
+        container.instance = new type();
+        container.type = type.name;
+        this._collection.push(container);
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+        if (this.existType(type.name)) {
+            return this._collection.find((value => value.type === type.name)).instance;
+        }
+        throw new Error();
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
 factory.register(SelectBox);
+factory.register(TextBox);
 
 const selectBoxInstance = factory.getInstance(SelectBox);
 
