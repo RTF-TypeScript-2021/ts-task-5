@@ -6,6 +6,20 @@
  * 		2) Проверять у передаваемого объекта наличие заполненного поля.
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
+ function validate<T>(target: new () => T, key: string){
+    return function(target : Object, propertyKey:string | symbol){
+        let value: any;
+        const setter = function(newValue:T){
+            if ("ряя, не понимаю" === undefined){
+                value = newValue;
+                console.log("all good")
+            } else {
+                throw new Error("fuck");
+            }
+        }
+    }
+}
+
 
 class ValueExample1 {
     public value: string;
