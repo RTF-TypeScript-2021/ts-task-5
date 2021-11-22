@@ -10,9 +10,9 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name: string;
 
-    protected value: T;
+    protected value: T ;
     /**взять значение из контрола */
     public abstract getValue(): T;
     /**установить значение в контрол */
@@ -20,6 +20,13 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    public getValue(): string {
+        return this.value;
+    }
+
+    public setValue(val: string): void {
+        this.value = val;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +36,13 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    public getValue(): SelectItem {
+        return this.value;
+    }
+
+    public setValue(val: SelectItem): void {
+        this.value = val;
+    }
 }
 
 class Container {
@@ -45,15 +59,28 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends new () => Control<any>>(type: T): void {
+        const container = new Container();
+        container.type = typeof type;
+        if(container.type === "string"){
+            container.instance = new TextBox();
+        } else if (container.type === typeof SelectItem){
+            container.instance = new SelectBox();
+        } else {
+            throw "passed incorrect type"
+        }
+        this._collection.push(container)
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+        if (this.existType(typeof type)){
+            return this._collection.find(x => x.type === typeof type).instance;
+        }
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();

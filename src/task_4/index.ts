@@ -1,4 +1,4 @@
-/** Задача 4
+ /** Задача 4
  * Реализовать декоратор с шаблонным типом, который добавляется к полю класса.
  * Декоратор должен выполнять 2 функции:
  * 		1) Проверять соответствие устанавливаемого значения типу, который передан в декоратор.
@@ -31,4 +31,8 @@ class ValidationExample {
 
     @validate(ValueExample2, "booleanProp")
     public propValueExample2: any;
+}
+
+function validate(target: object, propertyKey: string, example, name){
+
 }
