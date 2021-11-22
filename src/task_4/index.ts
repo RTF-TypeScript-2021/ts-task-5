@@ -6,20 +6,39 @@
  * 		2) Проверять у передаваемого объекта наличие заполненного поля.
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
- function validate<T>(target: new () => T, key: string){
-    return function(target : Object, propertyKey:string | symbol){
-        let value: any;
-        const setter = function(newValue:T){
-            if ("ряя, не понимаю" === undefined){
-                value = newValue;
-                console.log("all good")
-            } else {
-                throw new Error("fuck");
-            }
-        }
-    }
-}
 
+ function validate<T>(type: new (...args: any[]) => T, propertyName: keyof T) {
+    /*Пометочка, type - конструктор, который возвращает экземпляр 
+    T - собственно какой-то экземпляр
+    PropertyName - свойство, может быть равно свойствам экземпляра T
+    */
+    return function<K>(target: K, propName: keyof K) {
+        /*Тут получается все для того, чтобы propName было равно свойству из target
+        а target = new ValidationExample(), тогда propName: propValueExample1 | propValueExample2
+        */
+       //Сохраним начальное значение
+        let value:unknown = target[propName];
+
+        Object.defineProperty(target, propName, {
+            get: ()=>{
+                return value;
+            },
+            set: (newValue: T) => {
+                if (!(newValue instanceof type)) {
+                    console.log(value);
+                    throw new Error(
+                        `unexpected type for ${propName.toString()}
+                         expect instance of ${type.name}`
+                        );
+                }
+                if(newValue[propertyName] === undefined) {
+                    throw new Error(`property ${propertyName.toString()} is undefined`)
+                }
+                value = newValue;
+            },
+        });
+    };
+}
 
 class ValueExample1 {
     public value: string;
@@ -46,3 +65,29 @@ class ValidationExample {
     @validate(ValueExample2, "booleanProp")
     public propValueExample2: any;
 }
+
+const ve = new ValidationExample();
+const ve1 = new ValueExample1("asdf", 123);
+ve.propValueExample1 = ve1;
+try {
+    ve.propValueExample2 = ve1;
+} catch (e){
+    console.log("Ошибка")
+    console.log(e)
+}
+
+try {
+    ve.propValueExample1 = new ValueExample1("12qe");
+} catch (e){
+    console.log("Ошибка")
+    console.log(e) 
+}
+
+try {
+    ve.propValueExample2 = new ValueExample2(undefined);
+} catch (e){
+    console.log("Ошибка")
+    console.log(e) 
+}
+
+
