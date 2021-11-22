@@ -25,6 +25,32 @@ class ValueExample2 {
     }
 }
 
+function validate<T extends new () => { [key: string]: any }>(target: T, propertyKey: string) {
+    let value: unknown = undefined;
+    const targ = new target();
+
+    const getter = function () {
+        return value;
+    };
+
+    const setter = function (newValue: unknown) {
+        if (propertyKey in targ) {
+            if (!targ[propertyKey] || typeof targ[propertyKey] !== typeof newValue) {
+                throw new Error("");
+            } else {
+                value = targ[propertyKey]
+            }
+        }
+    };
+
+    return (target: object, key: string) => {
+        Object.defineProperty(target, key, {
+            get: getter,
+            set: setter
+        });
+    };
+}
+
 class ValidationExample {
     @validate(ValueExample1, "id")
     public propValueExample1: any;
