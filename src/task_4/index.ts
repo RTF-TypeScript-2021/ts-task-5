@@ -25,6 +25,23 @@ class ValueExample2 {
     }
 }
 
+
+function validate<T extends new () => { [key: string]: any }>(target: T, key: string) {
+    let field: string;
+    const instance = new target();
+    return function (obj: Object, propName: string) {
+        Object.defineProperty(obj, propName, {
+            get: () => field,
+            set: (value: string) => {
+                if (!(propName in obj) || typeof(instance) !== typeof(obj) || !instance[propName]) {
+                    throw new Error();
+                }
+                field = value;
+            },
+        });
+    };
+}
+
 class ValidationExample {
     @validate(ValueExample1, "id")
     public propValueExample1: any;
@@ -32,3 +49,4 @@ class ValidationExample {
     @validate(ValueExample2, "booleanProp")
     public propValueExample2: any;
 }
+

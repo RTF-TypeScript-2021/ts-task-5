@@ -20,6 +20,14 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+
+    public getValue(): string {
+        return this.value;
+    }
+
+    public setValue(val: string): void {
+        this.value = val;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,11 +37,23 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    public getValue(): SelectItem {
+        return this.value;
+    }
+
+    public setValue(val: SelectItem): void {
+        this.value = val;
+    }
 }
 
 class Container {
-    public instance: Control<any>;
     public type: string;
+    public instance: Control<any>;
+
+    constructor (type: string, instance: Control<any>) {
+        this.type = type;
+        this.instance = instance;
+    }
 }
 
 /**Фабрика которая отвечает за создание экземпляров контролов */
@@ -45,21 +65,27 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
-
-public getInstance<?>(type: ?): ? {
+    public register<T extends Control<any>>(type: new() => T) {
+        const instance = new type();
+        this._collection.push(new Container(typeof instance, instance));
     }
 
-    private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+    public getInstance<T extends Control<any>>(type: new() => T): T {
+        if (this.existType(typeof type)) {
+            return this._collection.find(c => c.type === typeof type).instance.getValue();
+        }
+        throw new Error(`There is no such instance of class: ${type}`);
+    }
+
+    private existType<T extends Control<any>>(type: string) {
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
 factory.register(SelectBox);
-
+console.log(factory);
 const selectBoxInstance = factory.getInstance(SelectBox);
 
-selectBoxInstance.setValue("sdfsdf") // компилятор TS не пропускает
+//selectBoxInstance.setValue("sdfsdf") // компилятор TS не пропускает
 selectBoxInstance.setValue(new SelectItem()) // компилятор TS пропускает
