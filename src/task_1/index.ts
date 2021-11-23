@@ -5,7 +5,23 @@
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
 
+function emailDecorator(target:Object,key:string){
+    let email:string;
+    Object.defineProperty(target,key,{
+        set(newEmail:string){
+            if(newEmail.match(`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`)){
+                email=newEmail
+                console.log("email valid")
+            }
+            else{
+                throw new Error(`${newEmail} is not valid email`)
+            }
+        }
+    })
+}
+
 class Example {
+    @emailDecorator
     public email: string = "";
 }
 

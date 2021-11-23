@@ -20,6 +20,13 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    public getValue(): string {
+        return this.value;
+    }
+    public setValue(val: Required<string>): void {
+            this.value=val;
+    }
+
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +36,24 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    public getValue(): SelectItem {
+        return this.value;
+    }
+    public setValue(val: Required<SelectItem>): void {
+        this.value=val;
+    }
+
+
+}
+
+class ErrorBox extends Control<Error>{
+    public getValue(): Error {
+        throw new Error("Error of typesation");
+    }
+    public setValue(val: Error): void {
+        throw new Error("Error of typesation");
+    }
+
 }
 
 class Container {
@@ -45,13 +70,21 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
+    public register<T extends new ()=>Control<any>>(type: T):void {
+        const cont = new Container();
+        cont.instance = new type();
+        cont.type=type.name;
+        this._collection.push(cont);
+
 }
 
-public getInstance<?>(type: ?): ? {
+public getInstance<T extends new() =>  Control<any>>(type: T): Control<any> {
+    
+    return this.existType(type.name) ? this._collection.find(x=>x.type===type.name)?.instance: new ErrorBox;
     }
 
     private existType(type: string) {
+        
     return this._collection.filter(g => g.type === type).length > 0;
 }
 }

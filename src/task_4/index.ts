@@ -7,7 +7,9 @@
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
 
-class ValueExample1 {
+interface IValueExample { }
+
+class ValueExample1 implements IValueExample {
     public value: string;
     public id: number;
     public constructor(value?: string, id?: number) {
@@ -16,13 +18,35 @@ class ValueExample1 {
     }
 }
 
-class ValueExample2 {
+class ValueExample2 implements IValueExample {
     public undefinedProp: undefined;
     public booleanProp: boolean;
     public constructor(undefinedProp?: undefined, booleanProp?: boolean) {
         this.undefinedProp = undefinedProp;
         this.booleanProp = booleanProp;
     }
+}
+
+function validate<T extends new () => { [key: string]: any }>(target: T,key: string)
+: (_: object, keyobj: string) => void {
+    return (_: object, keyobj: string): void => {
+        let value = new target();
+        const isInstanceofValueExample = function (object: any): object is IValueExample {
+            return object;
+        };
+        Object.defineProperty(target, key, {
+            set: (newValue: object) => {
+                if (
+                    isInstanceofValueExample(newValue) &&
+                    Object.entries(newValue).find(([_, value]) => value)
+                ) {
+                    value = newValue;
+                } else {
+                    throw new Error(`${newValue} is not valid`);
+                }
+            },
+        });
+    };
 }
 
 class ValidationExample {
