@@ -1,11 +1,4 @@
-/** Задача 4
- * Реализовать декоратор с шаблонным типом, который добавляется к полю класса.
- * Декоратор должен выполнять 2 функции:
- * 		1) Проверять соответствие устанавливаемого значения типу, который передан в декоратор.
- * 		   Если тип не верный, то генерируется эксепшен.
- * 		2) Проверять у передаваемого объекта наличие заполненного поля.
- * 		   Если поле не заполнено, то генерируется эксепшен.
- */
+import "reflect-metadata";
 
 class ValueExample1 {
     public value: string;
@@ -26,9 +19,46 @@ class ValueExample2 {
 }
 
 class ValidationExample {
-    @validate(ValueExample1, "id")
-    public propValueExample1: any;
+    @validateClassProperty(ValueExample1, "id")
+    public propValueExample1: ValueExample1 = new ValueExample1('2', 3); // fine on compile and on instance creating
 
-    @validate(ValueExample2, "booleanProp")
-    public propValueExample2: any;
+    @validateClassProperty(ValueExample1, "id")
+    public propValueExample2: ValueExample1 = new ValueExample1('2'); // throw on instance creating
+
+    @validateClassProperty(ValueExample2, "booleanProp")
+    public propValueExample3: ValueExample1; // throw on compile
+
+    @validateClassProperty(ValueExample2, "booleanProp")
+    public propValueExample4: any; // throw on compile
+}
+
+function validateClassProperty<T>(expectedType: new () => T, expectedToDefineKey: string): any {
+    return function(parent: object, propertyKey: string): any {
+        const propType = Reflect.getOwnMetadata('design:type', parent, propertyKey) as new () => T;
+        /* брухич
+            Немного запутался: почему я не могу получить тип переменных другого класса через рефлексию? Пробовал также передавать
+            прототип класса и использовать другой метод Reflect.getMetadata(...), но всё так же. У меня есть только единственная догадка, 
+            из-за чего это не получается: по причине того, что декоратор находится за пределами нужного класса. При попытке вызвать метод
+            вне классов также не дало результатов. Пытался найти документацию, но никаких примеров с рефлексией класса за пределами
+            декоратора не нашёл. Можете объяснить, пожалуйста?
+            let otherPropType = Reflect.get(Own)Metadata('design:type', expectedType(.prototype), expectedToDefineKey); - undefined
+        */
+        if (propType !== expectedType) {
+            throw new Error(`Invalid type of property '${propertyKey}' in '${parent.constructor.name}' class: '${propType.name}' \
+            \nExpected: '${expectedType.name}'`);
+        }
+
+        let value: T;
+        const descriptor: PropertyDescriptor = {
+            set: (input: T) => {
+                if (!Object.fromEntries(Object.entries(input))[expectedToDefineKey]) {
+                    throw new Error(`Property '${expectedToDefineKey}' of '${propertyKey}' is undefined/null`);
+                }
+                value = input;
+            },
+            get: () => value
+        };
+        
+        return descriptor;
+    };
 }
