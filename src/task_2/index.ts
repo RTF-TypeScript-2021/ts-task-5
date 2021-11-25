@@ -63,7 +63,7 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<T extends new () => Control<any>>(type: T): void {
+    public register<T extends Control<any>>(type: new () => T): void {
         const container = new Container();
         container.instance = new type();
         container.type = type.name;
@@ -71,9 +71,9 @@ class FactoryControl {
 
     }
 
-    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+    public getInstance<T extends Control<any>>(type: new () => T): T {
         if (this.existType(type.name)) {
-            return this._collection.find((t) => type.name === t.type).instance;
+            return this._collection.find((t) => type.name === t.type).instance as T;
         }
         throw new Error("The type is not registered.");
     }
