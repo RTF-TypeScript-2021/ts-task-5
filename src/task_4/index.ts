@@ -7,10 +7,10 @@
  *           Если поле не заполнено, то генерируется эксепшен.
  */
 
-function validate<T extends new() => { [key: string | symbol | number]: any }>(type: T, field: string | symbol | number) {
+function validate<T>(type: new() => T, field: keyof T) {
     let value: T;
 
-    return function (target: object, propertyKey: string | symbol): void {
+    return function (target: object, propertyKey: string | symbol | number): void {
         Object.defineProperty(target, propertyKey, {
             get: () => value,
             set: (v: T) => {
