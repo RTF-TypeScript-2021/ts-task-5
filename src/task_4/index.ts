@@ -25,6 +25,24 @@ class ValueExample2 {
     }
 }
 
+function validate<T, P extends keyof T>(type: new() => T, property: string): any{
+    return (target: object, propertyKey: string): PropertyDescriptor =>{
+        const a: PropertyDescriptor = {
+            set(val: T): void{
+                if (!(val instanceof type)){
+                    throw new Error("Incorrect type of property")
+                }
+                if (!this[property]){
+                    throw new Error("Error: property is empty")
+                }
+                this[property] = val;
+            }
+        }
+
+        return a;
+    }
+}
+
 class ValidationExample {
     @validate(ValueExample1, "id")
     public propValueExample1: any;
@@ -33,6 +51,3 @@ class ValidationExample {
     public propValueExample2: any;
 }
 
-function validate(target: object, propertyKey: string, example, name){
-
-}

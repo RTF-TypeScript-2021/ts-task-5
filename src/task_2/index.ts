@@ -8,6 +8,8 @@
  * которые унаследованы от класса Control<T>.
  */
 
+import * as Console from "console";
+
 /**Базовый класс для контролов */
 abstract class Control<T> {
     public name: string;
@@ -25,6 +27,9 @@ class TextBox extends Control<string> {
     }
 
     public setValue(val: string): void {
+        if (!(typeof val !== "string")){
+            throw "incorrect type"
+        }
         this.value = val;
     }
 }
@@ -41,6 +46,9 @@ class SelectBox extends Control<SelectItem> {
     }
 
     public setValue(val: SelectItem): void {
+        if (!(val instanceof SelectItem)){
+            throw "incorrect type"
+        }
         this.value = val;
     }
 }
@@ -59,22 +67,18 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<T extends new () => Control<any>>(type: T): void {
+    public register<T extends Control<any>>(type: { new(): T}): void {
         const container = new Container();
-        container.type = typeof type;
-        if(container.type === "string"){
-            container.instance = new TextBox();
-        } else if (container.type === typeof SelectItem){
-            container.instance = new SelectBox();
-        } else {
-            throw "passed incorrect type"
-        }
+        container.type = type.name;
+        container.instance = new type();
         this._collection.push(container)
     }
 
-    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
-        if (this.existType(typeof type)){
-            return this._collection.find(x => x.type === typeof type).instance;
+    public getInstance<T extends Control<any>>(type: { new(): T }): Control<any> {
+        if (this.existType(type.name)){
+            Console.log(this._collection);
+
+            return this._collection.find(x => x.type === type.name).instance;
         }
     }
 
@@ -85,7 +89,6 @@ class FactoryControl {
 
 const factory = new FactoryControl();
 factory.register(SelectBox);
-
 const selectBoxInstance = factory.getInstance(SelectBox);
 
 selectBoxInstance.setValue("sdfsdf") // компилятор TS не пропускает
