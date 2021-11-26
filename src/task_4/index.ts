@@ -54,6 +54,9 @@ function validateClassProperty<T>(expectedType: new () => T, expectedToDefineKey
                 if (!Object.fromEntries(Object.entries(input))[expectedToDefineKey]) {
                     throw new Error(`Property '${expectedToDefineKey}' of '${propertyKey}' is undefined/null`);
                 }
+                if (!(input instanceof expectedType)) {
+                    throw new Error(`Invalid set type, expected: ${expectedType.name}`);
+                }
                 value = input;
             },
             get: () => value
@@ -62,3 +65,9 @@ function validateClassProperty<T>(expectedType: new () => T, expectedToDefineKey
         return descriptor;
     };
 }
+
+// throw in raw JS
+// var exm = new ValidationExample();
+// exm.propValueExample1 = "";
+// exm.propValueExample1 = {id: 1};
+// exm.propValueExample1 = ValueExample2(1, 1);
