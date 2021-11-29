@@ -6,6 +6,21 @@
  * 		2) Проверять у передаваемого объекта наличие заполненного поля.
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
+ function validate<T extends new() => any>(object: T, keyName: string) {
+    return (target: { [key: string] : any }, key: keyof typeof target) => {
+        let value: unknown;
+        Object.defineProperty(target, key, {
+            get: () => value,
+            set: (newValue) => {
+                if (typeof target[key] === typeof newValue) {
+                    value = newValue;
+                } else {
+                    throw new Error();
+                }
+            }   
+        });
+    }
+}
 
 class ValueExample1 {
     public value: string;

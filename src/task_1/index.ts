@@ -4,9 +4,26 @@
  * Когда присваивается корректный e-mail в консоль выводится сообщение email valid.
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
+ function Validator(target: object, key: string) {
 
+    let email: string;
+    const regExp = /(\w+|\w+\W\w+)@\w+\.(ru|com)/;
+
+    Object.defineProperty(target, key, {
+        get: () => email,
+        set: (value: string) => {            
+            if (regExp.test(value)) {
+                console.log("Email valid");
+                email = value;
+            } else {
+                throw new Error("Incorrect email.");
+            }
+        }
+    });
+}
 class Example {
-    public email: string = "";
+    @Validator
+    public email: string;
 }
 
 let exampleInstance = new Example();

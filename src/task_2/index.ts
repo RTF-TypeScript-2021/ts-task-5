@@ -20,6 +20,17 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    getValue(): string {
+        if (!this.value) {
+            throw new Error("Doesn't exist value");
+        }
+        
+        return this.value;
+    }
+    
+    setValue(newValue: string): void {
+        this.value = newValue;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +40,17 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    getValue(): SelectItem {
+        if (!this.value){
+            throw new Error("Doesn't exist value")   
+       }
+       
+       return this.value;
+   }
+   
+   setValue(newValue: SelectItem): void {
+        this.value = newValue;
+   }
 }
 
 class Container {
@@ -45,11 +67,17 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
+    public register<T extends Control<any>>(type: new () => T): void {
+        this._collection.push({ instance: new type(), type: typeof type });
 }
 
-public getInstance<?>(type: ?): ? {
+public getInstance<T extends Control<any>>(type: new ()=>T): T {
+    if (this.existType(type.name)) {
+        return this._collection.find(x => x.type === type.name).instance as T;
+    } else {
+        throw Error(`Вы ещё не зарегистрировали тип ${type.name}`);
     }
+}
 
     private existType(type: string) {
     return this._collection.filter(g => g.type === type).length > 0;
