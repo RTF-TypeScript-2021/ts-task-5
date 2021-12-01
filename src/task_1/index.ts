@@ -4,32 +4,28 @@
  * Когда присваивается корректный e-mail в консоль выводится сообщение email valid.
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
+import * as Console from "console";
 
 class Example {
     @EmailChecker
     email: string;
 }
 
-function EmailChecker(target: object, propertyKey: string) {
-    let _val: string = this[propertyKey];
-    const getter = function (): string {
-        return _val;
-    };
-
-    const setter = function (newVal: string) {
-        if(newVal.match(/^\w+@\w+\.\w+$/)){
-            _val = newVal;
-        } else{
-            throw "Invalid email";
+function EmailChecker(target: Example, propertyKey: string) {
+    let property: string;
+    Object.defineProperty(target, propertyKey, {
+        get: function (): string {
+            return property;
+        },
+        set: function (newVal: string) {
+            if(newVal.match(/^\w+@\w+\.\w+$/)){
+                property = newVal;
+                Console.log("e-mail valid")
+            } else{
+                throw "Invalid email";
+            }
         }
-    };
-
-    if (delete this[propertyKey]) {
-        Object.defineProperty(target, propertyKey, {
-            get: getter,
-            set: setter
-        });
-    }
+    });
 }
 
 
