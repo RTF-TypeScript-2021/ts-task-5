@@ -46,9 +46,6 @@ class SelectBox extends Control<SelectItem> {
     }
 
     public setValue(val: SelectItem): void {
-        if (!(val instanceof SelectItem)){
-            throw "incorrect type"
-        }
         this.value = val;
     }
 }
@@ -74,11 +71,11 @@ class FactoryControl {
         this._collection.push(container)
     }
 
-    public getInstance<T extends Control<any>>(type: { new(): T }): Control<any> {
+    public getInstance<T extends Control<any>>(type: { new(): T }): T {
         if (this.existType(type.name)){
             Console.log(this._collection);
 
-            return this._collection.find(x => x.type === type.name).instance;
+            return <T>this._collection.find(x => x.type === type.name).instance;
         }
     }
 
