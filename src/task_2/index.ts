@@ -13,7 +13,7 @@ class TextBox extends Control<string> {
     }
 
     public setValue(val: string): void {
-        if (typeof val !== 'string' || !val) {
+        if (typeof val !== 'string') {
             throw new Error('Invalid argument');
         }
         this.value = val;
