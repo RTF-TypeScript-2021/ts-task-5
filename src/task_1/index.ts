@@ -5,10 +5,38 @@
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
 
-class Example {
-    public email: string = "";
+function emailValidateDecor(target: object, propKey: string | symbol): any{
+    let _value = "";
+    const pd: PropertyDescriptor = {
+        get: function():string {
+            return _value;
+        },
+        set: function(value: string) {
+            const regexLiteral = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (regexLiteral.test(value)) {
+                _value = value;
+                console.log("e-mail valid");
+            } else {
+                throw new Error(`${value} isn't email`);
+            }
+
+        }
+    }
+
+    return pd;
 }
 
-let exampleInstance = new Example();
+class Example {
+    @emailValidateDecor
+    public email: string;
+}
+
+
+const exampleInstance = new Example();
+try{
 exampleInstance.email = "fkkldfjg"; // генерирует эксепшен
+} catch(e){
+    console.log(e);
+}
 exampleInstance.email = "misha@mail.ru"; // выводит в консоль e-mail valid
+console.log(exampleInstance.email);

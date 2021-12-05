@@ -10,7 +10,7 @@
 
 /**Базовый класс для контролов */
 abstract class Control<T> {
-    public name: string = "";
+    public name = "";
 
     protected value: T;
     /**взять значение из контрола */
@@ -20,6 +20,12 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    public getValue(): string {
+        throw new Error("Method not implemented.");
+    }
+    public setValue(val: string): void {
+        throw new Error("Method not implemented.");
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +35,12 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    public getValue(): SelectItem {
+        throw new Error("Method not implemented.");
+    }
+    public setValue(val: SelectItem): void {
+        throw new Error("Method not implemented.");
+    }
 }
 
 class Container {
@@ -45,15 +57,22 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends Control<any>>(type: new () => T) {
+        const container = new Container();
+        container.instance = new type();
+        container.type = type.name;
+        this._collection.push(container);
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends Control<any>>(type: new () => T): T{
+        const instance = new type();
+
+        return instance;
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
