@@ -10,7 +10,7 @@
     Object.defineProperty(target, propertyName, {
         get: () => emailValue,
         set: (newEmailValue: string) =>{
-            const reg = /(\w+|\w+\W\w+)@\w+\.(ru|com)/;
+            const reg = /(\w+|\w+\W\w+)@\w+\.(ru|com|net|lv|ua|cc|am|ws|)/;
             if (!reg.test(propertyName)) {
                 throw new Error("email invalid");
             }
