@@ -49,10 +49,10 @@ export class SelectBox extends Control<SelectItem> {
     }
 
     setValue(val: SelectItem): void {
-        if ("value" in val && "id" in val) {
+        if (val instanceof SelectItem) {
             this.value = val;
         } else {
-            throw new Error();
+            throw new Error('wrong value')
         }
     }
 }

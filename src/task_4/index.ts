@@ -38,7 +38,7 @@ function validate<T extends new () => { [key: string]: any }>(object: T, objectK
                     && Object.entries(newValue).some(([key, value]) => key === objectKey && value)) {
                     value = newValue;
                 } else {
-                    throw new Error();
+                    throw new Error(`Поле не заполнено`);
                 }
             }
         });
