@@ -14,7 +14,9 @@ function validate<T extends new() => any>(object: T, propertyName: string) {
             get: () => val,
             set: (value) => {
                 if (!(typeof target[property] === typeof value)) {
-                    throw new Error("incorrect data")
+                    throw new Error("incorrect type");
+                } else if(value[propertyName] === undefined || value[propertyName] === null) {
+                    throw new Error("incorrect data");
                 } else {
                     val = value;
                 }
