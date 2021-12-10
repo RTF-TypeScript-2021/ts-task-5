@@ -34,24 +34,31 @@ class ValidationExample {
 }
 
 function validate<T extends new () => { [name: string]: any }>(object: T, objKey: string) {
-    const obj = new object();
-
     return (target: object, key: string) => {
         let value: unknown = undefined;
         Object.defineProperty(target, key, {
             get: () => value,
             set: (newValue) => {
-                if (objKey in obj) {
-                    if (typeof obj[objKey] !== typeof newValue) {
+                if (objKey in newValue) {
+                    if (!(newValue instanceof object)) {
                         throw new Error();
                     }
-                    if (!obj[objKey]) {
+                    if (newValue[objKey] === undefined) {
                         throw new Error();
                     }
-                    value = obj[objKey]
+                    value = newValue[objKey]
 
                 }
             }
         })
     }
 }
+
+const test = new ValidationExample();
+//const val1 = new ValueExample1();
+//test.propValueExample1=val1;
+
+const val2 = new ValueExample2();
+val2.booleanProp=false;
+//test.propValueExample1 = val2;
+test.propValueExample2=val2;

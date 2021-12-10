@@ -10,7 +10,7 @@ function validEmail(target: object, key: string) {
         get: () => emailValue,
         set: (newEmailValue: string) =>{
             const re = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/;
-            if (!re.test(key)) {
+            if (!re.test(newEmailValue)) {
                 throw new Error("email invalid");
             }
             emailValue = newEmailValue;
@@ -26,4 +26,4 @@ class Example {
 
 const exampleInstance = new Example();
 exampleInstance.email = "fkkldfjg";// генерирует эксепшен
-exampleInstance.email = "misha@mail.ru"; // выводит в консоль e-mail valid
+exampleInstance.email = "misha@mail.com"; // выводит в консоль e-mail valid

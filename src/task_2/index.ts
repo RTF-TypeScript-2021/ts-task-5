@@ -26,7 +26,7 @@ class TextBox extends Control<string> {
     }
 
     public setValue(value: string): void {
-        if (typeof value !== "string" && !value) {
+        if (typeof value !== "string" || !value) {
             throw new Error();
         }
         this.value = value;
@@ -70,18 +70,18 @@ class FactoryControl {
         const container = new Container();
         container.type = type.name;
         container.instance = new type();
-        this._collection.push({ instance: new type(), type: typeof type });
+        this._collection.push();
     }
 
     public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
-        if (this.existType(type.name)) {
-            return this._collection.find((value) => value.type === type.name).instance;
+        if (this.existType(typeof type)) {
+            return this._collection.find(value => value.type === typeof type).instance;
         }
         throw new Error();
     }
 
     private existType(type: string) {
-        return this._collection.filter((g) => g.type === type).length > 0;
+        return this._collection.filter(g => g.type === type).length > 0;
     }
 }
 
