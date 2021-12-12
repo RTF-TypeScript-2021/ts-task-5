@@ -44,7 +44,8 @@ class SelectBox extends Control<SelectItem> {
       }
     
       public setValue(value: SelectItem): void {
-        if (!("value" in value && "id" in value)) {
+        if (!("value" in value && "id" in value ) 
+        || !(value instanceof SelectItem)) {
           throw new Error("Non correct value");
         }
         this.value = value;
@@ -66,17 +67,15 @@ class FactoryControl {
     }
 
     public register<T extends new () => Control<any>>(type: T) {
-        const container = new Container();
-        container.type = type.name;
-        container.instance = new type();
-        this._collection.push({instance: new type(), type: typeof type });
-      }
+        this._collection.push({instance: new type(), type: type.name });
+    }
 
     public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
-        if (this.existType(type.name)) {
-          return this._collection.find((value) => value.type === type.name) as unknown as Control<any>;
+        const instanceControl: Control<any> | undefined = this._collection.find((value) => value.type === type.name)?.instance;
+        if (instanceControl === undefined) {
+            throw new Error(`Нельзя найти инстанс ${type.name}`)
         }
-        return new type();
+        return instanceControl;
     }
 
     private existType(type: string) {
