@@ -44,11 +44,13 @@ function validate<T extends new () => { [k: string]: any }>(object: T, property:
                 if (prop in object) {
                     if (typeof obj[property] === typeof newValue) {
                         if (!obj[property]) {
-                            throw new Error("Wrong property");
+                            throw new Error("Wrong value");
                         }
                         
                         value = obj[property];
                     }
+                } else {
+                    throw new Error("Wrong property")
                 }
             }
         })

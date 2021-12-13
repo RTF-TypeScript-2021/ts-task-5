@@ -31,7 +31,7 @@ class TextBox extends Control<string> {
     }
     
     setValue(val: string): void {
-        if (!val) {
+        if (typeof val !== "string") {
             throw Error("Wrong input argument");
         }
         
@@ -57,7 +57,7 @@ class SelectBox extends Control<SelectItem> {
     }
     
     setValue(val: SelectItem): void {
-        if (!val) {
+        if (!(val instanceof SelectItem)) {
             throw Error("Wrong input argument");
         }
         

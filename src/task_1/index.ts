@@ -23,7 +23,7 @@ function checkValidity(target: object, key: string) {
 
 class Example {
     @checkValidity
-    public email = "";
+    public email: string;
 }
 
 const exampleInstance = new Example();
