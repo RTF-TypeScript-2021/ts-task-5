@@ -6,22 +6,24 @@
  * 		2) Проверять у передаваемого объекта наличие заполненного поля.
  * 		   Если поле не заполнено, то генерируется эксепшен.
  */
-
-class ValueExample1 {
-    public value: string;
-    public id: number;
-    public constructor(value?: string, id?: number) {
-        this.value = value;
-        this.id = id;
-    }
-}
-
-class ValueExample2 {
-    public undefinedProp: undefined;
-    public booleanProp: boolean;
-    public constructor(undefinedProp?: undefined, booleanProp?: boolean) {
-        this.undefinedProp = undefinedProp;
-        this.booleanProp = booleanProp;
+function validate(type: new() => any, propertyName: string) {
+    return (target: { [key: string] : any }, propertyKey: keyof typeof target): void => {
+        let currentVal: unknown
+        const descriptor: PropertyDescriptor = {
+            get: function() {
+                return currentVal;
+            },
+            set: function(value) {
+                if (!(value instanceof type)) {
+                    throw new Error(Вы хотите ввести неправильный тип данных! Надо - ${type.name}, а у вас ${typeof value});
+                } else if (!value[propertyName]) {
+                    throw new Error(У вас не заданао поле ${propertyName});
+                } else {
+                    currentVal = value;
+                }
+            }
+        }
+        Object.defineProperty(target, propertyKey, descriptor);
     }
 }
 
