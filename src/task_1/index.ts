@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /** Задача 1
  * Реализовать декоратор, используя встроенную поддержку декораторов в TypeScript,
  * который будет реагировать на присвоение в поле email значения.
@@ -7,9 +5,8 @@
  * Когда присваивается некорректный e-mail возбуждается ошибка.
  */
 
-function decorator(target: object, propertyKey: string): void{
-    let giveValue: string  = this[propertyKey];
-
+function decorators(target: Object, propertyKey: string): void{
+    let giveValue: string;
     const reForEmail = /[a-zA-Z0-9]+@[a-zA-Z0-9]+.[a-zA-Z0-9]+/;
 
     Object.defineProperty(target, propertyKey, {
@@ -18,7 +15,7 @@ function decorator(target: object, propertyKey: string): void{
         },
         set: function(value: string) {
         if(value.search(reForEmail) === -1){
-            throw Error("Ваш Email не Email");
+            throw Error("Ваш не Email");
         } else{
             console.log('e-mail valid');
             giveValue = value;
@@ -28,10 +25,10 @@ function decorator(target: object, propertyKey: string): void{
 }
 
 class Example {
-    @decorator
+    @decorators
     public email: string;
 }
 
-const exampleInstance = new Example();
+let exampleInstance = new Example();
 exampleInstance.email = "fkkldfjg"; // генерирует эксепшен
 exampleInstance.email = "misha@mail.ru"; // выводит в консоль e-mail valid
