@@ -46,7 +46,7 @@ class SelectBox extends Control<SelectItem> {
     constructor() {
         super();
     }
-    getValue(): SelectItem {
+    public getValue(): SelectItem {
         if (!this.value) {
             throw new Error("Button doesn't contains value");
         }
@@ -54,8 +54,10 @@ class SelectBox extends Control<SelectItem> {
         return this.value;
     }
 
-    setValue(val: SelectItem): void {
-        this.value = val;
+    public setValue(val: SelectItem): void {
+        if (val instanceof SelectItem) {
+            this.value = val;
+        }
     }
 }
 
