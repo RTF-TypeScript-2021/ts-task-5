@@ -20,6 +20,20 @@ abstract class Control<T> {
 }
 /**Класс описывает TextBox контрол */
 class TextBox extends Control<string> {
+    constructor() {
+        super();
+    }
+
+    getValue(): string {
+        return this.value;
+    }
+
+    setValue(value: string): void {
+        if (typeof(value) !== "string") {
+            throw new Error("Wrong value");
+        }
+        this.value = value;
+    }
 }
 /**value контрола selectBox */
 class SelectItem {
@@ -29,6 +43,20 @@ class SelectItem {
 
 /**Класс описывает SelectBox контрол */
 class SelectBox extends Control<SelectItem> {
+    constructor() {
+        super();
+    }
+
+    getValue(): SelectItem {
+        return this.value;
+    }
+
+    setValue(value: SelectItem): void {
+        if (!(value instanceof SelectItem)) {
+            throw new Error("Wrong value");
+        }
+        this.value = value;
+    }
 }
 
 class Container {
@@ -45,15 +73,24 @@ class FactoryControl {
         this._collection = [];
     }
 
-    public register<?>(type: ?) {
-}
+    public register<T extends new () => Control<any>>(type: T) {
+        const container: Container = {
+            instance: new type,
+            type: type.name
+        }
+        this._collection.push(container);
+    }
 
-public getInstance<?>(type: ?): ? {
+    public getInstance<T extends new () => Control<any>>(type: T): Control<any> {
+        if (!this.existType(typeof type)) {
+            throw new Error("Instance is not found");
+        }
+        return this._collection.find(x => x.type === typeof type).instance;
     }
 
     private existType(type: string) {
-    return this._collection.filter(g => g.type === type).length > 0;
-}
+        return this._collection.filter(g => g.type === type).length > 0;
+    }
 }
 
 const factory = new FactoryControl();
